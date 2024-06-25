@@ -442,7 +442,7 @@ mod tests {
             (Val::String(r#"\☃""#.into()), r#""\\☃\"""#),
             (Val::String("\t\r\n\0".into()), r#""\t\r\n\u{0}""#),
         ] {
-            let got = crate::to_string(&val)
+            let got = wasm_wave::to_string(&val)
                 .unwrap_or_else(|err| panic!("failed to serialize {val:?}: {err}"));
             assert_eq!(got, want, "for {val:?}");
         }
@@ -453,9 +453,9 @@ mod tests {
         use crate::component::{Type, Val};
         use std::fmt::Debug;
 
-        fn round_trip<V: crate::WasmValue + PartialEq + Debug>(ty: &V::Type, val: &V) {
-            let val_str = crate::to_string(val).unwrap();
-            let result: V = crate::from_str::<V>(ty, &val_str).unwrap();
+        fn round_trip<V: wasm_wave::wasm::WasmValue + PartialEq + Debug>(ty: &V::Type, val: &V) {
+            let val_str = wasm_wave::to_string(val).unwrap();
+            let result: V = wasm_wave::from_str::<V>(ty, &val_str).unwrap();
             assert_eq!(val, &result);
         }
 

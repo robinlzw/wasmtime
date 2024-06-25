@@ -143,7 +143,7 @@ mod tests {
                 "(1234605616436508552, 1311768467294899695)",
             ),
         ] {
-            let got = crate::to_string(&val)
+            let got = wasm_wave::to_string(&val)
                 .unwrap_or_else(|err| panic!("failed to serialize {val:?}: {err}"));
             assert_eq!(got, want, "for {val:?}");
         }
