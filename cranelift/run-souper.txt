@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+# 在 `clif-util souper-harvest` 收集的左手边表达式上运行 Souper。
+#
+# 此脚本接受两个输入：
+#
+# 1. `souper-check` 可执行文件，以及
+# 2. 收集的左手边表达式目录（即你指定给 `clif-util souper-harvest` 的 `-o $directory`）。
+#
+# 对于 Souper 成功合成了右手边表达式的左手边文件 `foo`，此脚本将把整个优化写入名为 `foo.result` 的兄弟文件中。
+#
+# 左手边表达式按大小从小到大的顺序处理。这有助于更快地给出初步结果，但确实意味着随着我们遇到越来越大的左手边表达式，进度会减慢。
+#
+# 使用方法：
+#
+#     run-souper.sh path/to/souper-check path/to/left-hand-sides
+
+set -e
+
+# 配置 Souper 应尝试生成的右手边表达式的大小以及我们给它合成结果的时间。随意调整这些参数！
+MAX_INSTS=3
+TIMEOUT=5s
+
+# 在一个左手边表达式上运行 Souper。
+function run_one {
+    local souper=$1
+    local lhs=$2
+    local rhs="$lhs".result
+
+    if [[ -f "$rhs" ]]; then
+        return
+    fi
+
+    local temp=$(mktemp)
+    local cmd="taskset --cpu-list 0-3 $souper --infer-rhs -souper-enumerative-synthesis-max-instructions=$MAX_INSTS $lhs > $temp"
+
+    set +e
+    $(which timeout) --foreground --kill-after=1s $TIMEOUT bash -c "$cmd"
+    local exit_code="$?"
+    set -e
+
+    case "$exit_code" in
+        "0")
+            # 成功！将 RHS 复制到最终目的地。
+            cp $lhs $rhs
+            cat "$temp" >> "$rhs"
+            ;;
+
+        # SIGINT。退出整个脚本。
+        "130")
+            exit 1
+            ;;
+
+        # 超时（常规）。
+        "124")
+            return
+            ;;
+
+        # 超时（带 SIGKILL）。
+        "137")
+            return
+            ;;
+
+        # 其他情况。
+        *)
+            exit 1
+    esac
+
+}
+
+# 在所有左手边表达式上运行 Souper。
+function main {
+    local souper=$1
+    local lhs_dir=$2
+    local lhs_count=$(ls -1 $lhs_dir | grep -v result | wc -l)
+
+    echo "Processing $lhs_count left-hand sides."
+
+    cd "$lhs_dir"
+
+    local i=0;
+    for lhs in $(ls -1S $lhs_dir); do
+        # 忽略 '.result' 文件。
+        if $(echo "$lhs" | grep -q result); then
+            continue;
+        fi
+
+        i=$(( $i + 1 ))
+        if (( $i % 5 == 0 )); then
+            local percent=$(( $i * 100 / $lhs_count ))
+            echo "$i / $lhs_count ($percent%)"
+        fi
+
+        run_one "$souper" "$lhs"
+    done
+
+    echo "Done!"
+}
+
+# 开始一切！
+main $1 $2
+
+### 解释和总结
+
+这个 Bash 脚本是为了在使用 `clif-util souper-harvest` 收集的左手边表达式上运行 Souper 时使用的。Souper 是一个自动化的程序合成工具，它尝试为给定的表达式找到一个更有效的等价表达式。
+
+脚本接受两个参数：Souper 检查工具的路径和收集的左手边表达式所在的目录。脚本会为每个左手边表达式运行 Souper，并把成功的优化结果写入一个同名的 `.result` 文件中。
+
+脚本中定义了两个函数：`run_one` 用于在单个左手边表达式上运行 Souper，而 `main` 函数则遍历所有左手边表达式并调用 `run_one`。脚本还包含了一些配置参数，如 `MAX_INSTS` 和 `TIMEOUT`，这些参数控制 Souper 尝试生成的右手边表达式的大小和时间限制。
+
+脚本使用 `timeout` 命令来限制 Souper 的运行时间，并根据返回的状态码处理不同的超时和错误情况。最后，脚本输出处理进度，并在所有表达式处理完成后输出 "Done!"。
+
+总的来说，这个脚本是一个自动化工具，用于集成 Souper 的优化到现有的代码库中，旨在提高代码的效率，同时减少手动优化的工作量。

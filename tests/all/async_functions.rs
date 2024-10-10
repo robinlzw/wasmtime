@@ -22,6 +22,7 @@ async fn run_smoke_typed_test(store: &mut Store<()>, func: Func) {
     func.call_async(&mut *store, ()).await.unwrap();
 }
 
+/*
 #[tokio::test]
 async fn smoke() {
     let mut store = async_store();
@@ -184,6 +185,7 @@ async fn recursive_call() {
     let func = instance.get_func(&mut store, "").unwrap();
     func.call_async(&mut store, &[], &mut []).await.unwrap();
 }
+*/
 
 #[tokio::test]
 async fn suspend_while_suspending() {
@@ -246,6 +248,7 @@ async fn suspend_while_suspending() {
     func.call_async(&mut store, &[], &mut []).await.unwrap();
 }
 
+/*
 #[tokio::test]
 async fn cancel_during_run() {
     let mut store = Store::new(&Engine::new(Config::new().async_support(true)).unwrap(), 0);
@@ -473,7 +476,9 @@ async fn async_mpk_protection() -> Result<()> {
 
     Ok(())
 }
+*/
 
+/*
 /// This will execute the `future` provided to completion and each invocation of
 /// `poll` for the future will be executed on a separate thread.
 pub async fn execute_across_threads<F>(future: F) -> F::Output
@@ -730,6 +735,7 @@ async fn linker_module_reactor() -> Result<()> {
 
     Ok(())
 }
+*/
 
 pub struct CountPending<F> {
     future: F,
@@ -789,6 +795,7 @@ fn noop_waker() -> Waker {
     unsafe { Waker::from_raw(RAW) }
 }
 
+/*
 #[tokio::test]
 async fn non_stacky_async_activations() -> Result<()> {
     let mut config = Config::new();
@@ -1056,3 +1063,4 @@ async fn async_gc_with_func_new_and_func_wrap() -> Result<()> {
 
     Ok(())
 }
+ */

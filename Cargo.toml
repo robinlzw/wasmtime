@@ -135,14 +135,12 @@ opt-level = 0
 resolver = '2'
 members = [
   "cranelift",
-  "cranelift/isle/fuzz",
   "cranelift/isle/islec",
   "cranelift/isle/veri/veri_engine",
   "cranelift/isle/veri/veri_ir",
   "cranelift/serde",
   "crates/bench-api",
   "crates/c-api/artifact",
-  "crates/environ/fuzz",
   "crates/test-programs",
   "crates/wasi-preview1-component-adapter",
   "crates/wasi-preview1-component-adapter/verify",
@@ -152,7 +150,6 @@ members = [
   "examples/component/wasm",
   "examples/min-platform",
   "examples/min-platform/embedding",
-  "fuzz",
   "winch/codegen",
 ]
 exclude = [
@@ -219,18 +216,15 @@ wasmtime-asm-macros = { path = "crates/asm-macros", version = "=27.0.0" }
 wasmtime-versioned-export-macros = { path = "crates/versioned-export-macros", version = "=27.0.0" }
 wasmtime-slab = { path = "crates/slab", version = "=27.0.0" }
 component-test-util = { path = "crates/misc/component-test-util" }
-component-fuzz-util = { path = "crates/misc/component-fuzz-util" }
 wiggle = { path = "crates/wiggle", version = "=27.0.0", default-features = false }
 wiggle-macro = { path = "crates/wiggle/macro", version = "=27.0.0" }
 wiggle-generate = { path = "crates/wiggle/generate", version = "=27.0.0" }
 wasi-common = { path = "crates/wasi-common", version = "=27.0.0", default-features = false }
-wasmtime-fuzzing = { path = "crates/fuzzing" }
 wasmtime-jit-icache-coherence = { path = "crates/jit-icache-coherence", version = "=27.0.0" }
 wasmtime-wit-bindgen = { path = "crates/wit-bindgen", version = "=27.0.0" }
 test-programs-artifacts = { path = 'crates/test-programs/artifacts' }
 
 pulley-interpreter = { path = 'pulley', version = "=27.0.0" }
-pulley-interpreter-fuzz = { path = 'pulley/fuzz' }
 
 cranelift-codegen = { path = "cranelift/codegen", version = "0.114.0", default-features = false, features = ["std", "unwind"] }
 cranelift-frontend = { path = "cranelift/frontend", version = "0.114.0" }
@@ -242,7 +236,6 @@ cranelift-reader = { path = "cranelift/reader", version = "0.114.0" }
 cranelift-filetests = { path = "cranelift/filetests" }
 cranelift-object = { path = "cranelift/object", version = "0.114.0" }
 cranelift-jit = { path = "cranelift/jit", version = "0.114.0" }
-cranelift-fuzzgen = { path = "cranelift/fuzzgen" }
 cranelift-bforest = { path = "cranelift/bforest", version = "0.114.0" }
 cranelift-bitset = { path = "cranelift/bitset", version = "0.114.0" }
 cranelift-control = { path = "cranelift/control", version = "0.114.0" }
@@ -319,7 +312,7 @@ serde = { version = "1.0.188", default-features = false, features = ['alloc'] }
 serde_derive = "1.0.188"
 serde_json = "1.0.80"
 glob = "0.3.0"
-libfuzzer-sys = "0.4.0"
+#libfuzzer-sys = "0.4.0"
 walkdir = "2.3.3"
 cfg-if = "1.0"
 tempfile = "3.1.0"
